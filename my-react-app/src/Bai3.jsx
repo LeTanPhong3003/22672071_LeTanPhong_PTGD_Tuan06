@@ -1,8 +1,8 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef, useCallback, useMemo } from 'react';
 import { GlobalStateContext } from './GlobalStateContext';
-import './Bai1.css';
+import './Bai3.css';
 
-function Bai1() {
+const Bai3 = React.memo(() => {
   const { count, setCount, inputValue, setInputValue, imageUrl, setImageUrl } = useContext(GlobalStateContext);
   const inputRef = useRef(null);
 
@@ -16,21 +16,26 @@ function Bai1() {
       .catch(error => console.error('Error fetching image:', error));
   }, [setImageUrl]);
 
-  const handleIncrement = () => {
-    setCount(count + 1);
-  };
+  const handleIncrement = useCallback(() => {
+    setCount(prevCount => prevCount + 1);
+  }, [setCount]);
 
-  const handleDecrement = () => {
-    setCount(count - 1);
-  };
+  const handleDecrement = useCallback(() => {
+    setCount(prevCount => prevCount - 1);
+  }, [setCount]);
 
-  const handleShowInput = () => {
+  const handleShowInput = useCallback(() => {
     setInputValue(inputRef.current.value);
-  };
+  }, [setInputValue]);
+
+  const memoizedImage = useMemo(() => {
+    return imageUrl ? <img src={imageUrl} alt="Cat" /> : <p>Loading...</p>;
+  }, [imageUrl]);
 
   return (
-    <div className="bai1">
-      <h1>Bài 1</h1>
+    <div className="bai3">
+        <hr />
+        <h1>Bài 3</h1>
       <p>Count: {count}</p>
       <div className="button-container">
         <button onClick={handleIncrement}>+</button>
@@ -43,14 +48,10 @@ function Bai1() {
       <hr />
       <div>
         <h2>Fetched Image:</h2>
-        {imageUrl ? (
-          <img src={imageUrl} alt="Cat" />
-        ) : (
-          <p>Loading...</p>
-        )}
+        {memoizedImage}
       </div>
     </div>
   );
-}
+});
 
-export default Bai1;
+export default Bai3;
